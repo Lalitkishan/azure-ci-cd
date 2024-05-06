@@ -13,10 +13,10 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2.0.2
+      uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: latest
-        cli_config_credentials_token: ${{ secrets.TFC_TOKEN_ID }}
+        cli_config_credentials_token: ${{ secrets.TF_CLOUD_TOKEN }}
 
     - name: Terraform Init
       id: init
@@ -43,12 +43,10 @@ jobs:
       run: |
         echo "::set-env name=OUTPUT_VAR_1::$(terraform -chdir='./iac' output -raw output_var_1)"
         echo "::set-env name=OUTPUT_VAR_2::$(terraform -chdir='./iac' output -raw output_var_2)"
-
     - name: Display Terraform Outputs
       run: |
         echo "Output 1: $OUTPUT_VAR_1"
         echo "Output 2: $OUTPUT_VAR_2"
-
     - uses: azure/docker-login@v1
       with:
         login-server: lalithrgdevacr.azurecr.io
