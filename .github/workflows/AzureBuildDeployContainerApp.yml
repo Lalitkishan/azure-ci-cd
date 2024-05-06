@@ -38,14 +38,23 @@ jobs:
     - name: Terraform Apply
       run: terraform -chdir="./iac" apply -auto-approve
 
-    - name: Terraform Output
-      run: terraform output
+    - name: Capture Terraform Outputs
+      id: terraform_outputs
+      run: |
+        echo "::set-env name=OUTPUT_VAR_1::$(terraform -chdir='./iac' output -raw output_var_1)"
+        echo "::set-env name=OUTPUT_VAR_2::$(terraform -chdir='./iac' output -raw output_var_2)"
+
+    - name: Display Terraform Outputs
+      run: |
+        echo "Output 1: $OUTPUT_VAR_1"
+        echo "Output 2: $OUTPUT_VAR_2"
 
     - uses: azure/docker-login@v1
       with:
         login-server: cloudquickstartregistry.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
+
     - run: |
         docker build . -t cloudquickstartregistry.azurecr.io/myapp:1.0.0
         docker push cloudquickstartregistry.azurecr.io/myapp:1.0.0
